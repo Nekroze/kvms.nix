@@ -1,9 +1,9 @@
 { config, lib, pkgs, ... }:
 with lib;
 let
-  cfg = config.qubix;
+  cfg = config.kvms;
   makeVMService = target: {
-    name = "qubix-vm-"+target.name;
+    name = "kvms-"+target.name;
     enable = target.autostart;
     value = {
       description = target.name+" VM";
@@ -14,14 +14,14 @@ let
       wantedBy = [ "multi-user.target" ];
       script = ''
         mkdir -p /var/lib/kvms/
-        ${target.qubixbuild}/bin/run-${target.name}-vm
+        ${target.qemubuild}/bin/run-${target.name}-vm
       '';
     };
   };
 in {
   ######### NixOS Options Interface
   options = {
-    qubix = {
+    kvms = {
       enable = mkOption {
         type = types.bool;
         default = false;
@@ -44,7 +44,7 @@ in {
                 default = false;
                 description = "Start this VM on boot.";
               };
-              qubixbuild = mkOption {
+              qemubuild = mkOption {
                 type = types.path;
                 description = "qemu-nix build";
               };
@@ -68,7 +68,7 @@ in {
             };
             config = mkMerge [
               (mkIf options.config.isDefined {
-                qubixbuild = config.config.system.build.vm;
+                qemubuild = config.config.system.build.vm;
               })
             ];
           }
@@ -92,7 +92,7 @@ in {
   };
   ######### Implementation of the interface's options
   config = let
-    VMServices = builtins.listToAttrs (map makeVMService (attrValues config.qubix.vms));
+    VMServices = builtins.listToAttrs (map makeVMService (attrValues config.kvms.vms));
   in mkIf cfg.enable {
     systemd.services = VMServices;
   };
