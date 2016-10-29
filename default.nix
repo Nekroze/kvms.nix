@@ -92,7 +92,7 @@ in {
   };
   ######### Implementation of the interface's options
   config = let
-    VMServices = builtins.listToAttrs (map makeVMService (attrValues config.kvms.vms));
+    VMServices = mapAttrs makeVMService config.kvms.vms;
   in mkIf cfg.enable {
     systemd.services = VMServices;
   };
