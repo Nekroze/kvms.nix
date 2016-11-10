@@ -61,7 +61,7 @@ in {
                         imports = [ ./qemu-vm.nix ];
                       };
                       in [ extraConfig ] ++ (map (x: x.value) defs);
-                    prefix = [ "kvms-" name ];
+                    prefix = [ "kvms" name ];
                   }).config;
                 };
               };
